@@ -1,0 +1,30 @@
+{
+  "name": "codejam-front",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && cf build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "deploy": "cf deploy"
+  },
+  "dependencies": {
+    "@material/web": "^2.5.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^2.0.0-beta.v.6",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "cf": "1.0.0-beta.24",
+    "typescript": "7.0.2",
+    "vite": "^8.3.5"
+  }
+}
