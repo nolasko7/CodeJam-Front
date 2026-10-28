@@ -1,7 +1,7 @@
 import { defineConfig } from "cf/config";
 
 export default defineConfig({
-  accountId: "6d93a005ece548efa7de48c051ace6fb",
+  accountId: "9983b00182c2b1f7101394e060af1f0e",
   worker: {
     name: "codejam-front",
     compatibilityDate: "2026-10-28",
