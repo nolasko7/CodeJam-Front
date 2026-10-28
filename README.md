@@ -16,3 +16,7 @@ Copy `.env.example` to `.env.local` to point the app at another API. Production 
 ## Cloudflare
 
 The Vite Cloudflare plugin builds the app as a Worker with static assets. `npm run build` typechecks and creates the production build; `npm run deploy` publishes it with `cf deploy`.
+
+### Automatic deploys
+
+Every push to `main` deploys the Worker; you can also run **Deploy Worker** manually from the repository's Actions tab. Add a repository Actions secret named `CLOUDFLARE_API_TOKEN` containing a Cloudflare API token with Workers Scripts Edit permission, scoped to the account in `cloudflare.config.ts`. The workflow runs `npm ci`, `npm run typecheck`, and `npm run build` before deploying that build with `npm run deploy -- --prebuilt`.
