@@ -155,7 +155,17 @@ export function App() {
         </>
       )}
       </div>
-      {version === "desafio-1" && <DesafioPremium />}
+      {version === "desafio-1" && (
+        <DesafioPremium
+          informe={informe}
+          cargando={cargando}
+          error={error}
+          onResolver={resolverDataset}
+          onInforme={mostrar}
+          onError={setError}
+          onVerEtapas={() => setVersion("inicial")}
+        />
+      )}
     </main>
   );
 }

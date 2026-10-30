@@ -288,6 +288,7 @@ h3 { margin: 4px 0 8px; font-size: 1.35rem; letter-spacing: -0.02em; }
 .premium-formula > span, .premium-estrella { color: #946000; }
 .premium-formula p { margin: 4px 0 0; color: var(--texto-2); font-size: 0.9rem; }
 .desafio__mapa { max-width: 620px; }
+.desafio__acciones { margin-top: 12px; }
 .desafio__leyenda { margin: 12px 0 0; }
 .mapa__premium { fill: #9b6100; stroke: #fff; stroke-width: 3px; paint-order: stroke; font-size: 17px; pointer-events: none; }
 .premium-vacio { display: flex; align-items: center; gap: 14px; padding: 18px; border: 1px dashed #c9c0d8; border-radius: 14px; background: #fcfbfe; }
