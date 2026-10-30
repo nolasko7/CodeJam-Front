@@ -46,6 +46,8 @@ Los avisos se reciben en `public/push.js`: el texto no incluye datos del dataset
 
 ## Deploy controlado en Cloudflare
 
+El entorno de prueba usa `https://codejam-front-push-test.nicotrib699.workers.dev` y la API `https://codejam-back-push-test.nicotrib699.workers.dev`, con sus propios Workers y base D1. Para actualizarlo: `npm run build:staging` y luego `npm run deploy:staging`. La opción `--mode staging` conserva la separación de producción.
+
 La rama de implementación es `feat/pwa-responsive`. Los pushes a ramas distintas de `main` y los PR hacia `main` ejecutan **Validate frontend**: instalación, tests, typecheck/build y verificación de assets PWA. Ese workflow no despliega ni necesita un token de Cloudflare.
 
 La publicación sigue limitada a `main`: revisar el diff y los checks de la rama antes de integrarla. Todo push a `main` ejecuta **Deploy Worker**; también se puede disparar manualmente seleccionando `main`. La rama de trabajo no publica sobre `codejam.citax.com.ar`.

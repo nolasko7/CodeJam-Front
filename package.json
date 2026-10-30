@@ -9,6 +9,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && cf build",
+    "build:staging": "tsc --noEmit && cf build --mode staging",
+    "deploy:staging": "cf deploy --prebuilt --mode staging",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test scripts/*.test.mjs",
     "check:pwa": "node scripts/check-pwa-build.mjs",
