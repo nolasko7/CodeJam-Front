@@ -35,7 +35,7 @@ export function VisorEtapas({ informe, seleccionada, onSeleccionar, resaltado, o
 
       <div className="etapa">
         <div className="etapa__mapa">
-          <MapaGrilla dataset={dataset} instantanea={inst} resaltado={resaltado} onResaltar={onResaltar} />
+          <MapaGrilla dataset={dataset} instantanea={inst} resaltado={resaltado} onResaltar={onResaltar} mostrarPremium />
           {inst && (
             <ul className="leyenda leyenda--vehiculos">
               {inst.rutas.map((r) => (
@@ -46,6 +46,7 @@ export function VisorEtapas({ informe, seleccionada, onSeleccionar, resaltado, o
               ))}
               {inst.sinAsignar.length > 0 && <li><i className="sin-asignar" /> Sin asignar · {inst.sinAsignar.length}</li>}
               {inst.centros && <li><span className="cruz">×</span> Centro de k-means</li>}
+              {dataset.pedidos.some((p) => p.premium) && <li><span className="estrella">★</span> Premium</li>}
             </ul>
           )}
         </div>

@@ -62,6 +62,7 @@ export function App() {
 
   const ev = informe?.evaluacion;
   const elegido = informe?.porK.find((r) => r.elegido);
+  const premiumIds = new Set(informe?.dataset.pedidos.filter((p) => p.premium).map((p) => p.id) ?? []);
 
   return (
     <main className="pagina">
@@ -102,6 +103,12 @@ export function App() {
                 {ev.metricas.entregados}/{ev.metricas.pedidos} entregados · {ev.metricas.vehiculosUsados} de {informe.dataset.vehiculos.length} vehículos
                 {elegido && elegido.k !== ev.metricas.vehiculosUsados ? ` (mejor resultado con hasta ${elegido.k})` : ""}
               </span>
+              {(ev.metricas.premiumTotal ?? 0) > 0 && (
+                <span className="resumen__premium">
+                  ★ {ev.metricas.premiumEntregados}/{ev.metricas.premiumTotal} premium entregados · demora promedio{" "}
+                  {Math.round((ev.metricas.minutosPremium ?? 0) / Math.max(1, ev.metricas.premiumEntregados ?? 0))} min
+                </span>
+              )}
               <div className="resumen__acciones">
                 <button type="button" className="boton boton--tonal" onClick={() => descargar("plan.json", JSON.stringify({ rutas: informe.plan.rutas }, null, 2) + "\n", "application/json")}>Descargar plan.json</button>
                 <button type="button" className="boton boton--tonal" onClick={() => descargar("plan.csv", informe.planCsv, "text/csv")}>plan.csv</button>
@@ -132,11 +139,14 @@ export function App() {
 
           <section className="panel" aria-labelledby="plan-titulo">
             <h2 id="plan-titulo">6 · El plan que se entrega</h2>
+            {premiumIds.size > 0 && <p className="panel__ayuda">★ = pedido premium.</p>}
             <ul className="plan">
               {informe.plan.rutas.map((r) => (
                 <li key={r.vehiculo}>
                   <span className="plan__vehiculo"><i style={{ background: colorVehiculo(informe.dataset.vehiculos, r.vehiculo) }} />{r.vehiculo}</span>
-                  <span className="plan__paradas">{["D", ...r.paradas.map((p) => (p === "DEPOSITO" ? "D" : String(p))), "D"].join(" → ")}</span>
+                  <span className="plan__paradas">
+                    {["D", ...r.paradas.map((p) => (p === "DEPOSITO" ? "D" : premiumIds.has(p) ? `${p}★` : String(p))), "D"].join(" → ")}
+                  </span>
                 </li>
               ))}
               {ev.sinAsignar.length > 0 && <li><span className="plan__vehiculo">Sin asignar</span><span className="plan__paradas">{ev.sinAsignar.join(", ")} (fallan)</span></li>}

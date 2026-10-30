@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
 import type { Archivos } from "../api";
-import { cargarDatasetIncluido, DATASETS_INCLUIDOS, EJEMPLO, datasetAleatorio } from "../datasets";
+import { cargarDatasetIncluido, DATASETS_INCLUIDOS, EJEMPLO, EJEMPLO_PREMIUM, datasetAleatorio } from "../datasets";
 import type { Informe } from "../tipos";
 
 const NIVELES = [
@@ -31,6 +31,7 @@ export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props
   const [iteraciones, setIteraciones] = useState(60_000);
   const [pedidos, setPedidos] = useState(40);
   const [vehiculos, setVehiculos] = useState(5);
+  const [porcentajePremium, setPorcentajePremium] = useState(0);
 
   async function subir(e: ChangeEvent<HTMLInputElement>) {
     if (!e.target.files?.length) return;
@@ -76,11 +77,21 @@ export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props
           Subir archivos
           <input type="file" multiple accept=".json,.csv" onChange={subir} hidden />
         </label>
-        <button className="boton boton--tonal" type="button" onClick={() => { setArchivos(EJEMPLO); setOrigen("Ejemplo del simulador (10 pedidos, 3 vehículos)"); }}>
-          Ejemplo del simulador
+        <button className="boton boton--tonal" type="button" onClick={() => { setArchivos(EJEMPLO); setOrigen("Ejemplo base (10 pedidos, 3 vehículos, sin premium)"); }}>
+          Ejemplo base
+        </button>
+        <button className="boton boton--tonal" type="button" onClick={() => { setArchivos(EJEMPLO_PREMIUM); setOrigen("Ejemplo Evento 1 (10 pedidos, 2 premium)"); }}>
+          Ejemplo Evento 1 ★
         </button>
         <div className="carga__aleatorio">
-          <button className="boton boton--tonal" type="button" onClick={() => { setArchivos(datasetAleatorio(pedidos, vehiculos)); setOrigen(`Aleatorio: ${pedidos} pedidos, ${vehiculos} vehículos, depósito al azar`); }}>
+          <button
+            className="boton boton--tonal"
+            type="button"
+            onClick={() => {
+              setArchivos(datasetAleatorio(pedidos, vehiculos, porcentajePremium));
+              setOrigen(`Aleatorio: ${pedidos} pedidos, ${vehiculos} vehículos, ${porcentajePremium}% premium, depósito al azar`);
+            }}
+          >
             Aleatorio
           </button>
           <label>
@@ -88,6 +99,9 @@ export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props
           </label>
           <label>
             <input type="number" min={1} max={8} value={vehiculos} onChange={(e) => setVehiculos(Number(e.target.value))} aria-label="Vehículos" /> vehículos
+          </label>
+          <label>
+            <input type="number" min={0} max={100} step={5} value={porcentajePremium} onChange={(e) => setPorcentajePremium(Number(e.target.value))} aria-label="Porcentaje premium" /> % premium
           </label>
         </div>
       </div>

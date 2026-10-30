@@ -14,13 +14,13 @@ export interface Mundo {
   tiempoServicio: number;
   tiempoCarga: number;
   minPorCuadra: number;
-  costos: { porCuadra: number; porVehiculo: number; porMinutoTotal: number; porFalla: number };
+  costos: { porCuadra: number; porVehiculo: number; porMinutoTotal: number; porFalla: number; porMinutoPremium?: number };
 }
 
 export interface Pedido extends Punto {
   id: number;
   peso: number;
-  premium?: boolean;
+  premium?: boolean; // Evento 1
 }
 
 export interface Dataset {
@@ -39,6 +39,7 @@ export interface Desglose {
   vehiculos: number;
   tiempo: number;
   fallas: number;
+  premium?: number;
   total: number;
 }
 
@@ -50,6 +51,9 @@ export interface Metricas {
   vehiculosUsados: number;
   makespan: number;
   horaFin: number;
+  premiumTotal?: number;
+  premiumEntregados?: number;
+  minutosPremium?: number;
 }
 
 export interface Visita {
@@ -87,7 +91,8 @@ export interface ResultadoPorK {
   k: number;
   costoKmeans: number;
   costoBarrido: number;
-  metodo: "kmeans" | "barrido";
+  costoPremiumDedicado?: number | null;
+  metodo: "kmeans" | "barrido" | "premium-dedicado";
   construccion: number;
   busquedaLocal: number;
   recocido: number;
@@ -106,6 +111,7 @@ export interface PuntoConvergencia {
 export interface Informe {
   dataset: Dataset;
   opciones: { semilla: number; iteraciones: number; semillasKmeans: number };
+  premium?: { pedidos: number; costoPorMinuto: number } | null; // null o ausente: sin premium
   etapas: Etapa[];
   porK: ResultadoPorK[];
   convergencia: PuntoConvergencia[];
@@ -117,6 +123,32 @@ export interface Informe {
 
 export function aHora(minutos: number): string {
   return `${String(Math.floor(minutos / 60)).padStart(2, "0")}:${String(minutos % 60).padStart(2, "0")}`;
+}
+
+export const NOMBRE_METODO: Record<ResultadoPorK["metodo"], string> = {
+  kmeans: "k-means",
+  barrido: "barrido",
+  "premium-dedicado": "vehículo dedicado a premium",
+};
+
+/** Minuto (desde la salida) en que el vehículo llega a cada pedido, igual que el simulador. */
+export function llegadas(mundo: Mundo, pedidos: Pedido[], paradas: Parada[]): Map<number, number> {
+  const porId = new Map(pedidos.map((p) => [p.id, p]));
+  const resultado = new Map<number, number>();
+  let t = 0;
+  let pos: Punto = mundo.deposito;
+  for (const parada of paradas) {
+    const destino = parada === "DEPOSITO" ? mundo.deposito : porId.get(parada);
+    if (!destino) continue;
+    t += (Math.abs(pos.x - destino.x) + Math.abs(pos.y - destino.y)) * mundo.minPorCuadra;
+    if (parada === "DEPOSITO") t += mundo.tiempoCarga;
+    else {
+      resultado.set(parada, t);
+      t += mundo.tiempoServicio;
+    }
+    pos = destino;
+  }
+  return resultado;
 }
 
 export function formatear(n: number): string {

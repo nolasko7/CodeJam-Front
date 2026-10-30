@@ -40,8 +40,15 @@ export async function cargarDatasetIncluido(id: string): Promise<Archivos> {
   return archivos;
 }
 
+// datos/ejemplo del simulador para el Evento 1: los mismos pedidos, con 2 y 6 premium.
+export const EJEMPLO_PREMIUM: Archivos = {
+  ...EJEMPLO,
+  "mundo.json": JSON.stringify({ ...JSON.parse(EJEMPLO["mundo.json"]), costo_por_minuto_premium: 1 }),
+  "pedidos.json": JSON.stringify(JSON.parse(EJEMPLO["pedidos.json"]).map((p: { id: number }) => ({ ...p, premium: p.id === 2 || p.id === 6 }))),
+};
+
 /** Dataset al azar con el depósito en cualquier lugar, para probar que nada supone (0,0). */
-export function datasetAleatorio(pedidos: number, vehiculos: number): Archivos {
+export function datasetAleatorio(pedidos: number, vehiculos: number, porcentajePremium = 0): Archivos {
   const r = () => Math.floor(Math.random() * 20);
   const vistos = new Set<string>();
   const lista = [];
@@ -50,7 +57,7 @@ export function datasetAleatorio(pedidos: number, vehiculos: number): Archivos {
     const y = r();
     if (vistos.has(`${x},${y}`)) continue;
     vistos.add(`${x},${y}`);
-    lista.push({ id: lista.length + 1, x, y, peso: 1 + Math.floor(Math.random() * 25) });
+    lista.push({ id: lista.length + 1, x, y, peso: 1 + Math.floor(Math.random() * 25), premium: Math.random() * 100 < porcentajePremium });
   }
   return {
     "mundo.json": JSON.stringify({ deposito_x: r(), deposito_y: r(), hora_salida: "08:00" }),

@@ -14,6 +14,7 @@ export function LineaDeTiempo({ dataset, visitas, resaltado, onResaltar }: {
   const [hover, setHover] = useState<{ v: Visita; desde: number; fila: number } | null>(null);
   const inicio = dataset.mundo.horaSalida;
   const usados = [...new Set(visitas.map((v) => v.vehiculo))];
+  const premium = new Set<Visita["parada"]>(dataset.pedidos.filter((p) => p.premium).map((p) => p.id));
   if (usados.length === 0) return <p className="vacio">Ningún vehículo salió.</p>;
 
   const fin = Math.max(...visitas.map((v) => v.salida));
@@ -33,6 +34,7 @@ export function LineaDeTiempo({ dataset, visitas, resaltado, onResaltar }: {
         <span><i className="leyenda__barra leyenda__barra--viaje" /> Viajando</span>
         <span><i className="leyenda__barra" /> Entregando</span>
         <span><i className="leyenda__barra leyenda__barra--recarga" /> Recarga en depósito</span>
+        {premium.size > 0 && <span><span className="estrella">★</span> Entrega premium (cuanto más a la izquierda, menos cuesta)</span>}
       </div>
       <div className="grafico__lienzo">
         <svg viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="Línea de tiempo de cada vehículo">
@@ -65,6 +67,7 @@ export function LineaDeTiempo({ dataset, visitas, resaltado, onResaltar }: {
                       {v.salida > v.llegada && (
                         <rect x={x(v.llegada)} y={y + 2} width={Math.max(1.5, x(v.salida) - x(v.llegada) - 1)} height={18} rx={2} fill={v.estado === "RECARGA" ? "url(#rayado)" : color} />
                       )}
+                      {premium.has(v.parada) && <text x={x(v.llegada)} y={y + 1} className="gantt__estrella">★</text>}
                     </g>
                   );
                 })}
@@ -75,7 +78,9 @@ export function LineaDeTiempo({ dataset, visitas, resaltado, onResaltar }: {
         </svg>
         {hover && (
           <div className="tooltip" style={{ left: `${(x(hover.v.llegada) / ancho) * 100}%`, top: `${((8 + hover.fila * fila) / alto) * 100}%` }}>
-            <strong>{hover.v.vehiculo} · {hover.v.estado === "ENTREGADO" ? `pedido ${hover.v.parada}` : hover.v.estado === "RECARGA" ? "recarga" : "vuelta al depósito"}</strong>
+            <strong>
+              {hover.v.vehiculo} · {hover.v.estado === "ENTREGADO" ? `pedido ${hover.v.parada}${premium.has(hover.v.parada) ? " ★ premium" : ""}` : hover.v.estado === "RECARGA" ? "recarga" : "vuelta al depósito"}
+            </strong>
             <span>Sale {aHora(hover.desde)} · llega {aHora(hover.v.llegada)}</span>
             <span>{hover.v.cuadras} cuadras{hover.v.salida > hover.v.llegada ? ` · libre ${aHora(hover.v.salida)}` : ""}</span>
           </div>

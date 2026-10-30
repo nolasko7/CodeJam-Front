@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { colorVehiculo } from "../colores";
+import { aHora, llegadas } from "../tipos";
 import type { Dataset, Instantanea, Punto } from "../tipos";
 
 const CELDA = 28;
@@ -17,6 +18,7 @@ interface InfoPedido {
   vehiculo: string | null;
   orden: number | null;
   viaje: number;
+  llegada: number | null; // minutos desde la salida (solo si la ruta ya tiene orden)
 }
 
 export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar, mostrarPremium = false }: Props) {
@@ -33,12 +35,13 @@ export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar, mostra
   for (const ruta of rutas) {
     let orden = 0;
     let viaje = 1;
+    const tiempos = instantanea?.ordenada ? llegadas(mundo, pedidos, ruta.paradas) : new Map<number, number>();
     for (const p of ruta.paradas) {
       if (p === "DEPOSITO") {
         viaje++;
         continue;
       }
-      info.set(p, { vehiculo: ruta.vehiculo, orden: instantanea?.ordenada ? ++orden : null, viaje });
+      info.set(p, { vehiculo: ruta.vehiculo, orden: instantanea?.ordenada ? ++orden : null, viaje, llegada: tiempos.get(p) ?? null });
     }
   }
   const sinAsignar = new Set(instantanea?.sinAsignar ?? []);
@@ -117,6 +120,7 @@ export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar, mostra
               className="mapa__pedido"
             >
               <circle r={14} fill="transparent" />
+              {mostrarPremium && p.premium && <circle r={12.5} className="mapa__anillo-premium" />}
               <circle r={9.5} fill={color} className={fallido ? "mapa__punto mapa__punto--fallido" : "mapa__punto"} />
               {mostrarPremium && p.premium && <text x={9} y={-9} className="mapa__premium" aria-hidden="true">★</text>}
               <text y={3.5} className={i?.vehiculo ? "mapa__id" : "mapa__id mapa__id--oscuro"}>{p.id}</text>
@@ -140,6 +144,12 @@ export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar, mostra
               {hoverInfo.vehiculo}
               {hoverInfo.orden !== null && ` · parada ${hoverInfo.orden}`}
               {hoverInfo.viaje > 1 && ` · viaje ${hoverInfo.viaje}`}
+            </span>
+          )}
+          {hoverInfo?.llegada != null && (
+            <span>
+              Llega {aHora(mundo.horaSalida + hoverInfo.llegada)}
+              {mostrarPremium && hoverPedido.premium && ` · ${hoverInfo.llegada} min de demora × ${mundo.costos.porMinutoPremium ?? 1} = ${hoverInfo.llegada * (mundo.costos.porMinutoPremium ?? 1)}`}
             </span>
           )}
         </div>
