@@ -260,7 +260,7 @@ h3 { margin: 4px 0 8px; font-size: 1.35rem; letter-spacing: -0.02em; }
 /* Versiones de la experiencia */
 .versiones { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 20px; border: 1px solid var(--borde); border-radius: 18px; background: var(--superficie); }
 .versiones p { margin: 5px 0 0; color: var(--texto-2); font-size: 0.9rem; }
-.versiones__opciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.versiones__opciones { display: flex; flex: 1; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .versiones__opciones button { min-height: 44px; padding: 8px 16px; border: 1px solid var(--borde); border-radius: 999px; background: transparent; color: var(--texto-2); font: inherit; font-size: 0.9rem; cursor: pointer; }
 .versiones__opciones button[aria-pressed="true"] { border-color: var(--primario); background: var(--primario-suave); color: #3b2a7a; font-weight: 700; }
 .version-inicial:not([hidden]) { display: grid; gap: 20px; }

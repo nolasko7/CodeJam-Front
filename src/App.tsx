@@ -85,7 +85,6 @@ export function App() {
         </div>
         <div className="versiones__opciones" role="group" aria-label="Versión de la experiencia">
           <button type="button" aria-pressed={version === "inicial"} onClick={() => setVersion("inicial")}>Versión inicial</button>
-          <button type="button" aria-pressed={version === "desafio-1"} onClick={() => setVersion("desafio-1")}>Desafío 1 · Cliente prioritario</button>
         </div>
       </section>
 
