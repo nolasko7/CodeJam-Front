@@ -1,0 +1,14 @@
+{
+  "grilla_ancho": 16,
+  "grilla_alto": 20,
+  "deposito_x": 9,
+  "deposito_y": 8,
+  "hora_salida": "08:22",
+  "tiempo_servicio": 2,
+  "tiempo_carga": 5,
+  "min_por_cuadra": 2,
+  "costo_por_cuadra": 5,
+  "costo_por_vehiculo": 100,
+  "costo_por_minuto_total": 1,
+  "costo_por_falla": 250
+}

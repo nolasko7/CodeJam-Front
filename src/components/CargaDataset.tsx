@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
 import type { Archivos } from "../api";
-import { EJEMPLO, datasetAleatorio } from "../datasets";
+import { cargarDatasetIncluido, DATASETS_INCLUIDOS, EJEMPLO, datasetAleatorio } from "../datasets";
 import type { Informe } from "../tipos";
 
 const NIVELES = [
@@ -26,6 +26,8 @@ async function leer(archivos: FileList): Promise<Archivos> {
 export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props) {
   const [archivos, setArchivos] = useState<Archivos | null>(null);
   const [origen, setOrigen] = useState("");
+  const [datasetIncluido, setDatasetIncluido] = useState<string>(DATASETS_INCLUIDOS[0].id);
+  const [cargandoIncluido, setCargandoIncluido] = useState(false);
   const [iteraciones, setIteraciones] = useState(60_000);
   const [pedidos, setPedidos] = useState(40);
   const [vehiculos, setVehiculos] = useState(5);
@@ -48,6 +50,21 @@ export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props
       onInforme(informe);
     } catch {
       onError("Ese archivo no es un informe.json generado por npm run resolver.");
+    }
+  }
+
+  async function cargarIncluido() {
+    setCargandoIncluido(true);
+    onError("");
+    try {
+      const archivos = await cargarDatasetIncluido(datasetIncluido);
+      setArchivos(archivos);
+      const dataset = DATASETS_INCLUIDOS.find((d) => d.id === datasetIncluido);
+      setOrigen(`Dataset incluido: ${dataset?.nombre ?? datasetIncluido}`);
+    } catch (e) {
+      onError(e instanceof Error ? e.message : "No se pudo cargar el dataset de prueba");
+    } finally {
+      setCargandoIncluido(false);
     }
   }
 
@@ -74,6 +91,22 @@ export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props
           </label>
         </div>
       </div>
+      <div className="carga__incluido">
+        <label htmlFor="dataset-incluido">Dataset de prueba incluido</label>
+        <select
+          id="dataset-incluido"
+          value={datasetIncluido}
+          onChange={(e) => setDatasetIncluido(e.target.value)}
+          disabled={cargando || cargandoIncluido}
+        >
+          {DATASETS_INCLUIDOS.map((dataset) => (
+            <option key={dataset.id} value={dataset.id}>{dataset.nombre}</option>
+          ))}
+        </select>
+        <button className="boton boton--tonal" type="button" onClick={() => void cargarIncluido()} disabled={cargando || cargandoIncluido}>
+          {cargandoIncluido ? "Cargando…" : "Cargar dataset"}
+        </button>
+      </div>
       <p className="carga__ayuda">
         Subí <code>mundo</code>, <code>pedidos</code> y <code>vehiculos</code> juntos, en JSON o CSV. ¿Ya corriste <code>npm run resolver</code>?{" "}
         <label className="enlace">
@@ -92,7 +125,7 @@ export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props
             </button>
           ))}
         </div>
-        <md-filled-button disabled={!archivos || cargando} onClick={() => archivos && onResolver(archivos, iteraciones)}>
+        <md-filled-button disabled={!archivos || cargando || cargandoIncluido} onClick={() => archivos && onResolver(archivos, iteraciones)}>
           {cargando ? "Resolviendo…" : "Resolver"}
         </md-filled-button>
       </div>

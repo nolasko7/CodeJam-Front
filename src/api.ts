@@ -1,6 +1,8 @@
 import type { Informe } from "./tipos";
 
-export const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
+export const apiUrl = import.meta.env.VITE_API_URL ?? (
+  import.meta.env.DEV ? "http://localhost:8787" : "https://codejam-back.nicotrib699.workers.dev"
+);
 
 export type Archivos = Record<string, string>;
 

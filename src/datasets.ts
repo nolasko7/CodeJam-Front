@@ -16,6 +16,30 @@ export const EJEMPLO: Archivos = {
   "vehiculos.json": JSON.stringify([{ id: "V1" }, { id: "V2" }, { id: "V3" }]),
 };
 
+export const DATASETS_INCLUIDOS = [
+  { id: "01-uniforme-10p-3v", nombre: "01 · Uniforme · 10 pedidos · 3 vehículos" },
+  { id: "02-agrupados-25p-5v", nombre: "02 · Agrupados · 25 pedidos · 5 vehículos" },
+  { id: "03-corredor-40p-3v", nombre: "03 · Corredor · 40 pedidos · 3 vehículos" },
+  { id: "04-cerca-y-lejos-10p-5v", nombre: "04 · Cerca y lejos · 10 pedidos · 5 vehículos" },
+  { id: "05-puntos-repetidos-25p-3v", nombre: "05 · Puntos repetidos · 25 pedidos · 3 vehículos" },
+] as const;
+
+/** Lee desde los assets estáticos del deploy los tres archivos del dataset elegido. */
+export async function cargarDatasetIncluido(id: string): Promise<Archivos> {
+  const dataset = DATASETS_INCLUIDOS.find((d) => d.id === id);
+  if (!dataset) throw new Error("Ese dataset de prueba no está disponible.");
+
+  const archivos: Archivos = {};
+  const base = new URL(import.meta.env.BASE_URL, window.location.origin);
+  await Promise.all(["mundo.json", "pedidos.json", "vehiculos.json"].map(async (nombre) => {
+    const url = new URL(`datasets/${encodeURIComponent(dataset.id)}/${nombre}`, base);
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`No se pudo cargar ${nombre} del dataset ${dataset.id}.`);
+    archivos[nombre] = await response.text();
+  }));
+  return archivos;
+}
+
 /** Dataset al azar con el depósito en cualquier lugar, para probar que nada supone (0,0). */
 export function datasetAleatorio(pedidos: number, vehiculos: number): Archivos {
   const r = () => Math.floor(Math.random() * 20);
