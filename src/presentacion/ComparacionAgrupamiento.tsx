@@ -55,29 +55,27 @@ interface Props {
   dataset: Dataset;
   kmeans: Instantanea | null;
   barrido: { rutas: RutaPlan[] };
-  costoKmeans: number;
-  costoBarrido: number;
 }
 
-export function ComparacionAgrupamiento({ dataset, kmeans, barrido, costoKmeans, costoBarrido }: Props) {
+export function ComparacionAgrupamiento({ dataset, kmeans, barrido }: Props) {
   const sinResaltar = { resaltado: null, onResaltar: () => {} };
   const instantaneaBarrido: Instantanea = { ordenada: false, rutas: barrido.rutas, sinAsignar: [], costo: null, metricas: null };
   return (
     <div className="comparacion">
       <figure className="comparacion__col">
-        <figcaption className="comparacion__titulo">K-MEANS <span>costo de arranque {Math.round(costoKmeans)}</span></figcaption>
+        <figcaption className="comparacion__titulo">K-MEANS</figcaption>
         <div className="comparacion__mapa">
           <MapaGrilla dataset={dataset} instantanea={kmeans} {...sinResaltar} />
         </div>
-        <p>Agrupa por cercanía entre pedidos. Las × son los centros de cada grupo.</p>
+        <p>Agrupa por cercanía.</p>
       </figure>
       <figure className="comparacion__col">
-        <figcaption className="comparacion__titulo">BARRIDO ANGULAR <span>costo de arranque {Math.round(costoBarrido)}</span></figcaption>
+        <figcaption className="comparacion__titulo">BARRIDO ANGULAR</figcaption>
         <div className="comparacion__mapa">
           <MapaGrilla dataset={dataset} instantanea={instantaneaBarrido} {...sinResaltar} />
           <Cortes dataset={dataset} angulos={angulosDeCorte(dataset, barrido.rutas)} />
         </div>
-        <p>Ordena por ángulo desde el depósito y corta rebanadas. Las líneas son los cortes.</p>
+        <p>Corta por ángulo desde el depósito.</p>
       </figure>
     </div>
   );

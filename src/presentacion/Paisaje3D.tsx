@@ -178,7 +178,7 @@ function dibujar(ctx: CanvasRenderingContext2D, ancho: number, alto: number, vis
 }
 
 function etiqueta(ctx: CanvasRenderingContext2D, texto: string, x: number, y: number, fuerte: boolean) {
-  ctx.font = `${fuerte ? 700 : 500} 11.5px "DM Sans", system-ui, sans-serif`;
+  ctx.font = `${fuerte ? 700 : 500} 14.5px "DM Sans", system-ui, sans-serif`;
   ctx.lineWidth = 3.5;
   ctx.strokeStyle = "rgba(255,255,255,0.9)";
   ctx.strokeText(texto, x, y);

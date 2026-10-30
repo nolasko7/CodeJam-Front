@@ -7,7 +7,7 @@ import { useState } from "react";
 const N_MAX = 10;
 const ANCHO = 480;
 const ALTO = 290;
-const M = { izq: 62, der: 14, arriba: 14, abajo: 42 };
+const M = { izq: 66, der: 14, arriba: 14, abajo: 42 };
 const LOG_MAX = 7; // 10⁷
 const Y_NORMAL_MAX = 4_000_000;
 
@@ -36,9 +36,9 @@ function formatear(x: number): string {
 
 const MARCAS_LOG = [
   { v: 1, texto: "1" }, { v: 10, texto: "10" }, { v: 1e2, texto: "100" }, { v: 1e3, texto: "1 mil" },
-  { v: 1e4, texto: "10 mil" }, { v: 1e5, texto: "100 mil" }, { v: 1e6, texto: "1 millón" }, { v: 1e7, texto: "10 millones" },
+  { v: 1e4, texto: "10 mil" }, { v: 1e5, texto: "100 mil" }, { v: 1e6, texto: "1 M" }, { v: 1e7, texto: "10 M" },
 ];
-const MARCAS_NORMAL = [0, 1e6, 2e6, 3e6, 4e6].map((v) => ({ v, texto: v === 0 ? "0" : `${v / 1e6} millón${v > 1e6 ? "es" : ""}` }));
+const MARCAS_NORMAL = [0, 1e6, 2e6, 3e6, 4e6].map((v) => ({ v, texto: v === 0 ? "0" : `${v / 1e6} M` }));
 
 export function CrecimientoCostos() {
   const [logaritmica, setLogaritmica] = useState(true);
@@ -86,13 +86,12 @@ export function CrecimientoCostos() {
 
       <table className="crec__tabla">
         <thead>
-          <tr><th scope="col">Crecimiento</th><th scope="col">10 pedidos</th><th scope="col">40 pedidos</th></tr>
+          <tr><th scope="col">Crecimiento</th><th scope="col">Con 40 pedidos</th></tr>
         </thead>
         <tbody>
           {FUNCIONES.map((fn) => (
             <tr key={fn.clave}>
               <th scope="row"><i style={{ background: fn.color }} />{fn.nombre} <span>{fn.formula}</span></th>
-              <td>{formatear(fn.f(10))}</td>
               <td>{formatear(fn.f(40))}</td>
             </tr>
           ))}
