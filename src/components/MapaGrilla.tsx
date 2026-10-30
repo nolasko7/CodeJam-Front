@@ -10,6 +10,7 @@ interface Props {
   instantanea: Instantanea | null;
   resaltado: string | null;
   onResaltar: (vehiculo: string | null) => void;
+  mostrarPremium?: boolean;
 }
 
 interface InfoPedido {
@@ -18,7 +19,7 @@ interface InfoPedido {
   viaje: number;
 }
 
-export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar }: Props) {
+export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar, mostrarPremium = false }: Props) {
   const { mundo, pedidos, vehiculos } = dataset;
   const [hover, setHover] = useState<number | null>(null);
   const ancho = MARGEN * 2 + (mundo.ancho - 1) * CELDA;
@@ -61,7 +62,7 @@ export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar }: Prop
 
   return (
     <div className="mapa">
-      <svg viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="Mapa de la grilla con el depósito, los pedidos y las rutas">
+      <svg viewBox={`0 0 ${ancho} ${alto}`} role="group" aria-label="Mapa de la grilla. Tocá un pedido o usá Tab para ver su detalle.">
         {Array.from({ length: mundo.ancho }, (_, x) => (
           <line key={`v${x}`} x1={px(x)} x2={px(x)} y1={py(0)} y2={py(mundo.alto - 1)} className="mapa__calle" />
         ))}
@@ -104,12 +105,20 @@ export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar }: Prop
               key={p.id}
               transform={`translate(${px(p.x)} ${py(p.y)})`}
               opacity={atenuado ? 0.25 : 1}
-              onMouseEnter={() => setHover(p.id)}
-              onMouseLeave={() => setHover(null)}
+              tabIndex={0}
+              role="button"
+              aria-label={`Pedido ${p.id}${mostrarPremium && p.premium ? ", premium" : ""}, ${p.peso} kg. Ver detalle.`}
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") setHover(p.id); }}
+              onPointerLeave={(e) => { if (e.pointerType === "mouse") setHover(null); }}
+              onClick={() => setHover(p.id)}
+              onFocus={() => setHover(p.id)}
+              onBlur={() => setHover(null)}
+              onKeyDown={(e) => { if (e.key === "Escape") setHover(null); if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setHover(p.id); } }}
               className="mapa__pedido"
             >
               <circle r={14} fill="transparent" />
               <circle r={9.5} fill={color} className={fallido ? "mapa__punto mapa__punto--fallido" : "mapa__punto"} />
+              {mostrarPremium && p.premium && <text x={9} y={-9} className="mapa__premium" aria-hidden="true">★</text>}
               <text y={3.5} className={i?.vehiculo ? "mapa__id" : "mapa__id mapa__id--oscuro"}>{p.id}</text>
             </g>
           );
@@ -123,7 +132,7 @@ export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar }: Prop
 
       {hoverPedido && (
         <div className="mapa__tooltip" style={{ left: `${(px(hoverPedido.x) / ancho) * 100}%`, top: `${(py(hoverPedido.y) / alto) * 100}%` }}>
-          <strong>Pedido {hoverPedido.id}</strong>
+          <strong>Pedido {hoverPedido.id}{mostrarPremium && hoverPedido.premium ? " · ★ Premium" : ""}</strong>
           <span>({hoverPedido.x}, {hoverPedido.y}) · {hoverPedido.peso} kg</span>
           {sinAsignar.has(hoverPedido.id) && <span>Sin asignar: falla</span>}
           {hoverInfo?.vehiculo && (

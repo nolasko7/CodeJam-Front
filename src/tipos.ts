@@ -20,6 +20,7 @@ export interface Mundo {
 export interface Pedido extends Punto {
   id: number;
   peso: number;
+  premium?: boolean;
 }
 
 export interface Dataset {

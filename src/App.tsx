@@ -4,6 +4,7 @@ import type { Archivos } from "./api";
 import { CargaDataset } from "./components/CargaDataset";
 import { ComparacionK } from "./components/ComparacionK";
 import { Convergencia } from "./components/Convergencia";
+import { DesafioPremium } from "./components/DesafioPremium";
 import { DesgloseCosto } from "./components/DesgloseCosto";
 import { LineaDeTiempo } from "./components/LineaDeTiempo";
 import { VisorEtapas } from "./components/VisorEtapas";
@@ -23,6 +24,7 @@ function descargar(nombre: string, contenido: string, tipo: string) {
 }
 
 export function App() {
+  const [version, setVersion] = useState<"inicial" | "desafio-1">("inicial");
   const [status, setStatus] = useState<Status>("checking");
   const [informe, setInforme] = useState<Informe | null>(null);
   const [cargando, setCargando] = useState(false);
@@ -75,6 +77,18 @@ export function App() {
         </div>
       </header>
 
+      <section className="versiones" aria-labelledby="versiones-titulo">
+        <div>
+          <span className="eyebrow" id="versiones-titulo">Versión de la experiencia</span>
+          <p>Elegí una versión para explorar.</p>
+        </div>
+        <div className="versiones__opciones" role="group" aria-label="Versión de la experiencia">
+          <button type="button" aria-pressed={version === "inicial"} onClick={() => setVersion("inicial")}>Versión inicial</button>
+          <button type="button" aria-pressed={version === "desafio-1"} onClick={() => setVersion("desafio-1")}>Desafío 1 · Cliente prioritario</button>
+        </div>
+      </section>
+
+      <div hidden={version !== "inicial"} className="version-inicial">
       <CargaDataset cargando={cargando} onResolver={resolverDataset} onInforme={mostrar} onError={setError} />
       {error && <div className="error" role="alert">{error}</div>}
 
@@ -130,6 +144,8 @@ export function App() {
           </section>
         </>
       )}
+      </div>
+      {version === "desafio-1" && <DesafioPremium />}
     </main>
   );
 }
