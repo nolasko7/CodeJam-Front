@@ -62,3 +62,36 @@
   .paisaje__controles { margin-bottom:8px; }
   .paisaje__resumen { margin-top:8px; min-height:2.6em; }
 }
+
+/* Diapositivas con imagen grande y con QR */
+.pres-slide--ancha { grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); }
+.pres-slide--ancha .pres-figure { width: 100%; max-width: none; }
+.pres-slide--ancha .pres-figure img { max-height: 58vh; background: #0a0612; }
+.pres-qr { width: min(100%, 380px); }
+.pres-qr img { background: #fff; padding: 0; max-height: 52vh; width: auto; max-width: 100%; margin: 0 auto; }
+@media(max-width:760px) { .pres-slide--ancha { grid-template-columns: 1fr; } }
+
+/* K-means y barrido angular lado a lado */
+.comparacion { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(10px, 1.6vw, 22px); width: 100%; align-self: center; }
+.comparacion__col { margin: 0; min-width: 0; }
+.comparacion__titulo { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 10px; margin: 0 0 8px; color: #45316c; font-size: .72rem; font-weight: 700; letter-spacing: .12em; }
+.comparacion__titulo span { color: #716b76; font-weight: 500; letter-spacing: .04em; }
+.comparacion__mapa { position: relative; }
+.comparacion__cortes { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.comparacion__corte { stroke: #211f26; stroke-width: 2; stroke-dasharray: 7 5; opacity: .8; }
+.comparacion__col p { margin: 8px 0 0; color: #625e68; font-size: clamp(.78rem, min(.95vw, 1.6vh), .92rem); line-height: 1.35; }
+@media(max-width:760px) { .comparacion { grid-template-columns: 1fr; } }
+
+/* Arquitectura */
+.arq { display: flex; flex-direction: column; align-items: stretch; width: min(100%, 560px); justify-self: center; align-self: center; }
+.arq__nodo { position: relative; display: flex; align-items: center; gap: 14px; padding: clamp(8px, 1.5vh, 14px) 18px; border: 1px solid #d4cdd7; border-radius: 16px; background: #fff; box-shadow: 0 12px 34px #2c20431a; }
+.arq__nodo img { flex: none; width: clamp(30px, 5vh, 42px); height: clamp(30px, 5vh, 42px); object-fit: contain; }
+.arq__nodo div { display: grid; gap: 1px; min-width: 0; }
+.arq__nodo strong { font-size: clamp(.95rem, 1.2vw, 1.15rem); color: #222330; }
+.arq__nodo span { color: #625e68; font-size: clamp(.8rem, 1vw, .95rem); }
+.arq__nodo em { margin-left: auto; padding: 3px 10px; border-radius: 999px; background: #fdeadb; color: #a2480b; font-size: .68rem; font-style: normal; font-weight: 700; letter-spacing: .06em; white-space: nowrap; }
+.arq__nodo--dominio { background: #f1ecf9; border-color: #cbbfe8; }
+.arq__nodo--d1 { background: #fff6ee; border-color: #f3c9a1; }
+.arq__flecha { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: clamp(2px, .6vh, 6px) 0; color: #716b76; font-size: .72rem; font-weight: 600; letter-spacing: .06em; }
+.arq__flecha i { width: 2px; height: clamp(8px, 1.8vh, 16px); background: #7255ac; position: relative; }
+.arq__flecha i::after { content: ""; position: absolute; left: -4px; bottom: -4px; border: 5px solid transparent; border-top: 7px solid #7255ac; border-bottom: 0; }
