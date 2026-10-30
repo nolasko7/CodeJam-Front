@@ -221,10 +221,10 @@ export function Paisaje3D() {
     const medir = () => {
       const dpr = window.devicePixelRatio || 1;
       ancho = contenedor.clientWidth;
-      // En pantallas bajas (proyector o notebook de 768) el lienzo no puede pasar el alto que
-      // queda libre, para que la diapositiva entre sin scroll. dibujar() centra y escala según
-      // el lado menor, así que achicar el alto no deforma la superficie.
-      alto = Math.round(Math.min(ancho * 0.9, Math.max(260, window.innerHeight - 380)));
+      // El lienzo nunca pasa del alto que queda libre en la pantalla (de 720 a 1080), para que la
+      // diapositiva entre sin scroll. dibujar() centra y escala según el lado menor, así que
+      // achicar el alto no deforma la superficie.
+      alto = Math.round(Math.min(ancho * 0.9, Math.max(240, window.innerHeight * 0.58 - 60)));
       canvas.width = Math.round(ancho * dpr);
       canvas.height = Math.round(alto * dpr);
       canvas.style.height = `${alto}px`;
