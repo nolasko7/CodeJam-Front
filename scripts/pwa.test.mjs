@@ -37,6 +37,14 @@ test("push muestra título, cuerpo e ícono de la app", async () => {
   assert.equal(sw.notifications[0][1].icon, "/web-app-manifest-192x192.png");
 });
 
+test("el tag del trabajo reemplaza duplicados y despierta las ventanas abiertas", async () => {
+  const messages=[];
+  const sw=worker([{postMessage:message=>messages.push(message)}]);
+  await sw.fire("push",{data:{json:()=>({title:"Rutas listas",tag:"rutas-trabajo-1"})}});
+  assert.equal(sw.notifications[0][1].tag,"rutas-trabajo-1");
+  assert.equal(messages[0].type,"rutas-listas");
+});
+
 test("push vacío, inválido o con tipos incorrectos siempre muestra un aviso seguro", async () => {
   for (const data of [null, { json() { throw new Error("JSON inválido"); } }, { json: () => null }, { json: () => ({ title: {}, body: 123 }) }]) {
     const sw = worker();

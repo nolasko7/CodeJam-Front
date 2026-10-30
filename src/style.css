@@ -303,3 +303,7 @@ label:has(.entrada-archivo:focus-visible) { outline: 2px solid var(--primario); 
 @media (max-width: 640px), (hover: none) {
   .tooltip, .mapa__tooltip { position: static; transform: none; margin: 8px; white-space: normal; overflow-wrap: anywhere; pointer-events: auto; }
 }
+
+.notificaciones { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; flex-basis: 100%; border-top: 1px solid #d5ccec; padding-top: 10px; }
+.notificaciones p { flex: 1 1 260px; margin: 0; line-height: 1.5; }
+.trabajo-estado { margin: 0; padding: 14px 18px; border-radius: 16px; background: var(--primario-suave); color: var(--texto-2); line-height: 1.5; }

@@ -36,27 +36,13 @@ Después de una primera carga online se puede volver a abrir la app y cargar un 
 
 Las versiones nuevas esperan hasta que el usuario pulse «Actualizar app». El botón se deshabilita durante una resolución y el aviso recuerda descargar el plan antes de recargar. Cada pestaña requiere su propia acción: una actualización aceptada en otra pestaña no recarga la resolución ni el informe de esta. No se fuerza `skipWaiting` al instalar. Cerrar todas las ventanas permite que el navegador active normalmente una versión pendiente. `public/_headers` exige revalidar el worker, su receptor push y el manifest.
 
-## Notificaciones push: viable, receptor preparado
+## Notificaciones y trabajos asíncronos
 
-El worker importa `public/push.js`, que muestra notificaciones y abre únicamente destinos del mismo origen. Un payload JSON puede ser:
+El usuario puede activar o desactivar avisos desde la PWA. Al resolver un dataset, el front persiste un identificador y consulta el estado del trabajo; al finalizar recupera el informe. Un aviso abre el trabajo correspondiente en la misma instalación. El backend necesita Workflows, la migración D1 y claves VAPID configuradas. El resultado no se sincroniza entre dispositivos y borrar los datos del navegador elimina la clave de la instalación.
 
-```json
-{ "title": "Plan listo", "body": "Tu plan de reparto está disponible.", "url": "/" }
-```
+Para probar contra el backend local, construir el front con `VITE_API_URL=http://localhost:8787` y servir el build con `npm run preview -- --host localhost --port 5175`. La suscripción requiere permiso explícito y un navegador compatible; en iOS/iPadOS se debe instalar la PWA en la pantalla de inicio. La entrega real depende del proveedor push y de la conectividad del dispositivo.
 
-Los payloads vacíos o inválidos producen un aviso genérico. Se reutiliza una ventana si ya muestra el destino. Los tests cubren la recepción, datos inválidos y URLs externas o con esquemas ejecutables.
-
-**El envío remoto todavía no está implementado.** El backend actual solo expone health y resolución síncrona; agregar para habilitarlo:
-
-1. Claves VAPID: publicar solo la clave pública; guardar la privada como secreto del Worker.
-2. Un botón de suscripción que detecte `isSecureContext`, Service Worker, `PushManager` y `Notification`. Pedir permiso únicamente tras un clic. Tratar permiso denegado y navegadores no compatibles sin bloquear la app.
-3. Persistir en el backend `PushSubscription.toJSON()` asociada al usuario, con endpoints para alta/baja protegidos y CORS del origen exacto. Tratar endpoint y claves de suscripción como datos privados.
-4. Enviar Web Push cifrado desde el backend o un proveedor compatible; limpiar suscripciones vencidas al recibir 404/410. Para avisar de resoluciones terminadas con la app cerrada se necesita además ejecutar y persistir trabajos en segundo plano: hoy el resultado solo vuelve como respuesta al POST.
-5. Probar la entrega real en Android/escritorio y una PWA instalada en iOS/iPadOS. En iOS/iPadOS, Web Push está disponible desde 16.4 para apps agregadas al inicio; el permiso requiere interacción del usuario.
-
-No se ofrece un botón de activación hasta disponer de la suscripción y envío completos.
-
-Referencias: [Push API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Push_API), [Web Push en iOS/iPadOS (WebKit)](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/), [actualización manual (Vite PWA)](https://vite-pwa-org.netlify.app/guide/prompt-for-update).
+Los avisos se reciben en `public/push.js`: el texto no incluye datos del dataset y los enlaces se limitan al mismo origen. El informe se obtiene de la API usando la clave privada de la instalación.
 
 ## Deploy controlado en Cloudflare
 

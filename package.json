@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && cf build",
     "typecheck": "tsc --noEmit",
-    "test": "node --test scripts/pwa.test.mjs",
+    "test": "node --experimental-strip-types --test scripts/*.test.mjs",
     "check:pwa": "node scripts/check-pwa-build.mjs",
     "preview": "vite preview",
     "deploy": "dotenv cf deploy"

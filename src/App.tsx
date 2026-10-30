@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { apiDisponible, resolver } from "./api";
-import type { Archivos } from "./api";
+import { apiDisponible, claveInstalacion, consultarTrabajo, crearTrabajo, ErrorApi, guardarTrabajo, obtenerResultado, restaurarTrabajo } from "./api";
+import type { Archivos, TrabajoGuardado } from "./api";
 import { CargaDataset } from "./components/CargaDataset";
 import { ComparacionK } from "./components/ComparacionK";
 import { Convergencia } from "./components/Convergencia";
@@ -26,7 +26,10 @@ function descargar(nombre: string, contenido: string, tipo: string) {
 export function App() {
   const [status, setStatus] = useState<Status>("checking");
   const [informe, setInforme] = useState<Informe | null>(null);
-  const [cargando, setCargando] = useState(false);
+  const [trabajo,setTrabajo] = useState<TrabajoGuardado | null>(restaurarTrabajo);
+  const [cargando, setCargando] = useState(Boolean(trabajo));
+  const [estadoTrabajo,setEstadoTrabajo] = useState("");
+  const [revision,setRevision] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [etapa, setEtapa] = useState(6);
   const [resaltado, setResaltado] = useState<string | null>(null);
@@ -39,6 +42,75 @@ export function App() {
     return () => controller.abort();
   }, []);
 
+  useEffect(() => {
+    const despertar = () => setRevision(value => value + 1);
+    const enfocar = () => { if (document.visibilityState === "visible") despertar(); };
+    window.addEventListener("online",despertar);
+    document.addEventListener("visibilitychange",enfocar);
+    navigator.serviceWorker?.addEventListener("message",despertar);
+    return () => {
+      window.removeEventListener("online",despertar);
+      document.removeEventListener("visibilitychange",enfocar);
+      navigator.serviceWorker?.removeEventListener("message",despertar);
+    };
+  },[]);
+
+  useEffect(() => {
+    if (!trabajo) return;
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let timer: ReturnType<typeof setTimeout>;
+    let intentos = 0;
+    let enviado = !trabajo.solicitud;
+    const current = trabajo;
+
+    async function consultar() {
+      try {
+        if (!enviado) {
+          setEstadoTrabajo("Enviando el dataset…");
+          await crearTrabajo(current,signal);
+          if (signal.aborted) return;
+          enviado = true;
+          guardarTrabajo({id:current.id});
+        }
+        const estado = await consultarTrabajo(current.id,signal);
+        if (signal.aborted) return;
+        setStatus("online");
+        intentos = 0;
+        if (estado.estado === "completado") {
+          const resultado = await obtenerResultado(current.id,signal);
+          if (signal.aborted) return;
+          mostrar(resultado);
+          setCargando(false);
+          setEstadoTrabajo("Rutas listas. Podés descargar el plan o recorrer las etapas.");
+          return;
+        }
+        if (estado.estado === "fallido") {
+          setCargando(false);
+          setError(estado.error ?? "No se pudo resolver el dataset. Podés iniciar un nuevo cálculo.");
+          setEstadoTrabajo("");
+          return;
+        }
+        setEstadoTrabajo("Calculando las rutas. Podés cerrar la app; el cálculo continúa y te avisaremos si activaste las notificaciones.");
+      } catch (e) {
+        if (signal.aborted) return;
+        if (e instanceof ErrorApi && e.status >= 400 && e.status < 500 && e.status !== 429) {
+          setCargando(false);
+          setError(e.message);
+          setEstadoTrabajo("");
+          if (!enviado) guardarTrabajo(null);
+          return;
+        }
+        intentos++;
+        setEstadoTrabajo("No se pudo consultar el trabajo. Se reintentará automáticamente al recuperar la conexión.");
+      }
+      if (!signal.aborted) timer = setTimeout(() => void consultar(),Math.min(30_000,2_000 * 2 ** Math.min(intentos,4)));
+    }
+    setCargando(true);
+    void consultar();
+    return () => { controller.abort(); clearTimeout(timer); };
+  },[trabajo,revision]);
+
   function mostrar(nuevo: Informe) {
     setInforme(nuevo);
     setEtapa(nuevo.etapas[nuevo.etapas.length - 1].numero);
@@ -46,17 +118,27 @@ export function App() {
     setError(null);
   }
 
-  async function resolverDataset(archivos: Archivos, iteraciones: number) {
-    setCargando(true);
+  function resolverDataset(archivos: Archivos, iteraciones: number) {
     setError(null);
     try {
-      mostrar(await resolver(archivos, iteraciones));
-      setStatus("online");
+      claveInstalacion();
+      const nuevo = {id:crypto.randomUUID(),solicitud:{archivos,opciones:{iteraciones}}};
+      guardarTrabajo(nuevo);
+      const url = new URL(window.location.href);
+      url.searchParams.set("trabajo",nuevo.id);
+      window.history.replaceState(null,"",url);
+      setCargando(true);
+      setTrabajo(nuevo);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo resolver el dataset");
-    } finally {
-      setCargando(false);
+      setError(e instanceof Error ? `No se pudo guardar el trabajo en este navegador: ${e.message}` : "No se pudo guardar el trabajo. Habilitá el almacenamiento del navegador.");
     }
+  }
+
+  function abrirInforme(nuevo: Informe) {
+    setTrabajo(null);
+    setCargando(false);
+    setEstadoTrabajo("");
+    mostrar(nuevo);
   }
 
   const ev = informe?.evaluacion;
@@ -77,7 +159,8 @@ export function App() {
       </header>
 
       <ControlesPwa ocupado={cargando} hayInforme={informe !== null} />
-      <CargaDataset cargando={cargando} onResolver={resolverDataset} onInforme={mostrar} onError={setError} />
+      <CargaDataset cargando={cargando} onResolver={resolverDataset} onInforme={abrirInforme} onError={setError} />
+      {estadoTrabajo && <p className="trabajo-estado" role="status">{estadoTrabajo}</p>}
       {error && <div className="error" role="alert">{error}</div>}
 
       {informe && ev && (

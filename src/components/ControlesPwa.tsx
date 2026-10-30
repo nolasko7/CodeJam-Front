@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
+import { Notificaciones } from "./Notificaciones";
 
 interface EventoInstalacion extends Event {
   prompt: () => Promise<void>;
@@ -108,6 +109,7 @@ export function ControlesPwa({ ocupado, hayInforme }: { ocupado: boolean; hayInf
         </div>
       )}
       {error && <p className="pwa__error" role="status">{error}</p>}
+      <Notificaciones />
     </aside>
   );
 }

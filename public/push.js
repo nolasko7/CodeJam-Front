@@ -1,4 +1,4 @@
-// La suscripción y el envío requieren el backend; este worker recibe los avisos.
+// El backend solo envía el identificador; el informe requiere la clave de la instalación.
 self.addEventListener("push", (event) => {
   let payload;
   try {
@@ -10,7 +10,11 @@ self.addEventListener("push", (event) => {
   event.waitUntil(self.registration.showNotification(title, {
     body: typeof payload?.body === "string" ? payload.body : "Hay novedades en tu plan de reparto.",
     icon: "/web-app-manifest-192x192.png",
+    tag: typeof payload?.tag === "string" ? payload.tag.slice(0,100) : undefined,
     data: { url: typeof payload?.url === "string" ? payload.url : "/" },
+  }));
+  event.waitUntil(self.clients.matchAll({type:"window",includeUncontrolled:true}).then(windows => {
+    for (const client of windows) client.postMessage({type:"rutas-listas"});
   }));
 });
 
