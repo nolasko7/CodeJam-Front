@@ -160,3 +160,18 @@
   .pres-desglose h2 { font-size: 1.5rem; }
   .pres-desglose .desglose__lista li { font-size: 1.15rem; }
 }
+
+/* Comparación con y sin premium */
+.prem { margin: 0; width: 100%; min-width: 0; align-self: center; display: grid; gap: clamp(14px, 2.6vh, 28px); }
+.prem__fila { display: grid; gap: 6px; }
+.prem__nombre { margin: 0; color: #45316c; font-weight: 700; font-size: clamp(1.05rem, min(1.6vw, 2.9vh), 1.5rem); }
+.prem__barra { display: flex; height: clamp(46px, 8vh, 74px); border-radius: 12px; overflow: hidden; background: #e8e1ec; }
+.prem__barra span { display: grid; place-items: center; color: #fff; font-weight: 700; font-size: clamp(1.05rem, min(1.7vw, 3vh), 1.6rem); font-variant-numeric: tabular-nums; min-width: 0; }
+.prem__base { background: #7255ac; }
+.prem__premium { background: #e34948; }
+.prem__total { margin: 0; text-align: right; color: #625e68; font-size: clamp(1.05rem, min(1.6vw, 2.9vh), 1.5rem); }
+.prem__total strong { color: #222330; font-size: 1.25em; }
+.prem__leyenda { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0; padding: 0; list-style: none; color: #45316c; font-size: clamp(1rem, min(1.45vw, 2.6vh), 1.35rem); }
+.prem__leyenda li { display: inline-flex; align-items: center; gap: 8px; }
+.prem__leyenda i { display: inline-block; width: 16px; height: 16px; border-radius: 4px; }
+.prem figcaption { color: #89828c; font-size: .85rem; letter-spacing: .1em; }

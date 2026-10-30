@@ -6,6 +6,7 @@ import datos from "./informe.json";
 import datosZonas from "./informeZonas.json";
 import { ArquitecturaCloudflare } from "./ArquitecturaCloudflare";
 import { ComparacionAgrupamiento } from "./ComparacionAgrupamiento";
+import { ComparacionPremium } from "./ComparacionPremium";
 import { CrecimientoCostos } from "./CrecimientoCostos";
 import { Paisaje3D } from "./Paisaje3D";
 import datosBarrido from "./barridoZonas.json";
@@ -33,6 +34,7 @@ type Diapositiva = {
   qr?: boolean;
   comparar?: boolean; // k-means y barrido lado a lado
   arquitectura?: boolean;
+  premium?: boolean; // comparación de costos con y sin tener en cuenta a los premium
   crecimiento?: boolean; // gráfico de lineal, n², 2ⁿ y n!
 };
 
@@ -50,9 +52,10 @@ const slides: Diapositiva[] = [
   { etiqueta: "05  /  RUTA INICIAL", titulo: "Ordenamos cada grupo", bajada: "Así tenemos un primer plan completo, con su costo.", usamos: "Vecino más cercano y 2-opt.", porque: "Es rápido, y 2-opt elimina los cruces.", etapa: 3, zonas: true },
   { etiqueta: "06  /  BÚSQUEDA LOCAL", titulo: "Mejoramos con cambios chicos", bajada: "Probamos cambios y nos quedamos con los que bajan el costo.", usamos: "Mover o intercambiar pedidos entre vehículos.", porque: "Corrige lo que el agrupamiento no veía.", nota: "Se frena en un mínimo local.", etapa: 4, zonas: true },
   { etiqueta: "07  /  RECOCIDO SIMULADO", titulo: "Escapar de los mínimos locales", bajada: "A veces aceptamos un cambio peor, para no quedarnos atascados.", usamos: "Recocido simulado.", porque: "Con temperatura alta explora; al enfriarse se asienta.", nota: "Ilustración con 2 variables.", paisaje3d: true },
-  { etiqueta: "08  /  ARQUITECTURA", titulo: "Todo corre en Cloudflare", bajada: "Un solo proveedor para la aplicación, la API y los datos.", puntos: ["Workers: hospedan el front y la API.", "Dominio propio: codejam.citax.com.ar.", "D1 (SQLite): persistencia y datasets."], arquitectura: true, ancha: true },
-  { etiqueta: "09  /  ENTREGA", titulo: "Planes entregados y validados", bajada: "Los tres datasets del Evento 1 en la plataforma.", puntos: ["Evento 1 A: costo 1357", "Evento 1 C: costo 984", "Evento 1 B: costo 1806"], imagen: "entregas-evento1.png", alt: "Plataforma de entregas con los tres planes del Evento 1 válidos y sus costos", pie: "PLATAFORMA DE ENTREGAS · EVENTO 1", ancha: true },
-  { etiqueta: "10  /  PROBALO", titulo: "Probá la aplicación", bajada: "Escaneá el código con tu celular.", nota: "codejam.citax.com.ar", imagen: "qr-codejam.svg", alt: "Código QR que abre https://codejam.citax.com.ar/", pie: "CODEJAM.CITAX.COM.AR", qr: true },
+  { etiqueta: "08  /  CLIENTES PREMIUM", titulo: "Los premium cuentan más", bajada: "Cada minuto que espera un cliente premium suma al costo.", puntos: ["Probamos un vehículo solo para premium.", "Probamos visitarlos primero en cada ruta.", "Gana lo que da el menor costo total."], premium: true },
+  { etiqueta: "09  /  ARQUITECTURA", titulo: "Todo corre en Cloudflare", bajada: "Un solo proveedor para la aplicación, la API y los datos.", puntos: ["Workers: hospedan el front y la API.", "Dominio propio: codejam.citax.com.ar.", "D1 (SQLite): persistencia y datasets."], arquitectura: true, ancha: true },
+  { etiqueta: "10  /  ENTREGA", titulo: "Planes entregados y validados", bajada: "Los tres datasets del Evento 1 en la plataforma.", puntos: ["Evento 1 A: costo 1357", "Evento 1 C: costo 984", "Evento 1 B: costo 1806"], imagen: "entregas-evento1.png", alt: "Plataforma de entregas con los tres planes del Evento 1 válidos y sus costos", pie: "PLATAFORMA DE ENTREGAS · EVENTO 1", ancha: true },
+  { etiqueta: "11  /  PROBALO", titulo: "Probá la aplicación", bajada: "Escaneá el código con tu celular.", nota: "codejam.citax.com.ar", imagen: "qr-codejam.svg", alt: "Código QR que abre https://codejam.citax.com.ar/", pie: "CODEJAM.CITAX.COM.AR", qr: true },
 ];
 
 const informe = datos;
@@ -92,6 +95,7 @@ export function Presentacion() {
       {slide.comparar && <ComparacionAgrupamiento dataset={informeZonas.dataset} kmeans={informeZonas.etapas[1].instantanea} barrido={datosBarrido} />}
       {slide.arquitectura && <ArquitecturaCloudflare />}
       {slide.crecimiento && <CrecimientoCostos />}
+      {slide.premium && <ComparacionPremium />}
       {slide.imagen && <figure className={`pres-figure ${slide.qr ? "pres-qr" : ""}`}><img src={`/capturas-presentacion/${slide.imagen}`} alt={slide.alt} /><figcaption>{slide.pie}</figcaption></figure>}
       {slide.etapa && (() => {
         const fuente = slide.zonas ? informeZonas : informe;
