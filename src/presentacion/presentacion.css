@@ -34,3 +34,8 @@
 .paisaje__resumen { margin: 12px 0 0; min-height: 3em; color: #222330; font-size: clamp(.95rem, 1.1vw, 1.1rem); line-height: 1.4; font-weight: 500; }
 .paisaje figcaption { margin-top: 8px; color: #89828c; font-size: .65rem; letter-spacing: .12em; }
 @media(max-width:760px) { .pres-slide--3d { grid-template-columns: 1fr; } }
+
+.pres-desglose { background: #fff; border: 1px solid #d4cdd7; border-radius: 16px; padding: 24px; box-shadow: 0 20px 60px #2c20431c; }
+.pres-desglose h2 { display: flex; justify-content: space-between; gap: 12px; margin: 0 0 20px; font-size: 1.1rem; }
+.pres-desglose h2 strong { color: #7255ac; }
+@media (max-width: 420px) { .pres-desglose { padding: 16px; } .pres-desglose .desglose__lista li { grid-template-columns: 12px 1fr auto; } .pres-desglose .desglose__formula { grid-column: 2; } .pres-desglose .desglose__lista strong { grid-column: 3; grid-row: span 2; } }
