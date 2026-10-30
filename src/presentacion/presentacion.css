@@ -39,3 +39,21 @@
 .pres-desglose h2 { display: flex; justify-content: space-between; gap: 12px; margin: 0 0 20px; font-size: 1.1rem; }
 .pres-desglose h2 strong { color: #7255ac; }
 @media (max-width: 420px) { .pres-desglose { padding: 16px; } .pres-desglose .desglose__lista li { grid-template-columns: 12px 1fr auto; } .pres-desglose .desglose__formula { grid-column: 2; } .pres-desglose .desglose__lista strong { grid-column: 3; grid-row: span 2; } }
+
+/* Pantallas bajas (proyector o notebook de 768 de alto): todo entra sin scroll */
+@media (min-width:761px) and (max-height:820px) {
+  .pres-header { min-height:56px; }
+  .pres-footer { min-height:60px; }
+  .pres-slide { padding:22px 0; }
+  .pres-label { margin:0 0 14px; }
+  .pres-copy h1 { font-size:clamp(2.2rem, 4.2vw, 4.2rem); margin:0 0 14px; }
+  .pres-slide--portada h1 { font-size:clamp(3rem, 6vw, 6rem); }
+  .pres-cover-number { font-size:clamp(5rem, 11vw, 11rem); }
+  .pres-lead { font-size:clamp(1rem, 1.3vw, 1.25rem); margin:0 0 16px; }
+  .pres-formula { padding:12px 16px; margin:0 0 12px; }
+  .pres-copy li { padding:8px 0 8px 22px; } .pres-copy li:before { top:16px; }
+  .pres-razon { padding:8px 0 8px 16px; margin:0 0 10px; }
+  .pres-note { margin:14px 0 0; }
+  .paisaje__controles { margin-bottom:8px; }
+  .paisaje__resumen { margin-top:8px; min-height:2.6em; }
+}

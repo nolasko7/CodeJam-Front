@@ -221,7 +221,10 @@ export function Paisaje3D() {
     const medir = () => {
       const dpr = window.devicePixelRatio || 1;
       ancho = contenedor.clientWidth;
-      alto = Math.round(ancho * 0.9);
+      // En pantallas bajas (proyector o notebook de 768) el lienzo no puede pasar el alto que
+      // queda libre, para que la diapositiva entre sin scroll. dibujar() centra y escala según
+      // el lado menor, así que achicar el alto no deforma la superficie.
+      alto = Math.round(Math.min(ancho * 0.9, Math.max(260, window.innerHeight - 380)));
       canvas.width = Math.round(ancho * dpr);
       canvas.height = Math.round(alto * dpr);
       canvas.style.height = `${alto}px`;
@@ -229,6 +232,7 @@ export function Paisaje3D() {
     };
     const observador = new ResizeObserver(medir);
     observador.observe(contenedor);
+    window.addEventListener("resize", medir);
     medir();
 
     const largo = corrida.caminantes[0].camino.length;
@@ -236,7 +240,10 @@ export function Paisaje3D() {
       const dt = Math.min(ahora - previo, 64);
       previo = ahora;
       if (!fin) {
-        progreso = Math.min(1, (ahora - comienzo) / DURACION); // tiempo real: dura lo mismo aunque haya pocos cuadros por segundo
+        // Tiempo real: dura lo mismo aunque haya pocos cuadros por segundo. El primer cuadro puede
+        // traer una hora anterior a `comienzo` (requestAnimationFrame usa el inicio del cuadro):
+        // sin el piso en 0 el índice da −1, dibujar() falla y la animación queda en blanco.
+        progreso = Math.max(0, Math.min(1, (ahora - comienzo) / DURACION));
         if (progreso >= 1) {
           fin = true;
           setTerminado(true);
@@ -252,6 +259,7 @@ export function Paisaje3D() {
     return () => {
       cancelAnimationFrame(raf);
       observador.disconnect();
+      window.removeEventListener("resize", medir);
     };
   }, [corrida, resumen, repeticion, malla]);
 
