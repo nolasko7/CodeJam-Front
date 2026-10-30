@@ -6,6 +6,7 @@ import datos from "./informe.json";
 import datosZonas from "./informeZonas.json";
 import { ArquitecturaCloudflare } from "./ArquitecturaCloudflare";
 import { ComparacionAgrupamiento } from "./ComparacionAgrupamiento";
+import { CrecimientoCostos } from "./CrecimientoCostos";
 import { Paisaje3D } from "./Paisaje3D";
 import datosBarrido from "./barridoZonas.json";
 import { siguienteIndice } from "./navegacion.mjs";
@@ -32,6 +33,7 @@ type Diapositiva = {
   qr?: boolean;
   comparar?: boolean; // k-means y barrido lado a lado
   arquitectura?: boolean;
+  crecimiento?: boolean; // gráfico de lineal, n², 2ⁿ y n!
 };
 
 // Costo del plan inicial con cada método de agrupamiento, tal como lo registró el solver en el ejemplo.
@@ -49,7 +51,7 @@ const notaBarrido = mismoReparto
 
 const slides: Diapositiva[] = [
   { etiqueta: "CODEJAM  /  QUICKDROP", titulo: "Cómo armamos el plan de reparto", bajada: "Primero pensamos en técnicas de resolución como la fuerza bruta, que prueba todas las combinaciones. Vimos que no era viable: los tiempos de cómputo crecen demasiado con la cantidad de pedidos. Por eso decidimos abordarlo con una heurística, que construye un buen plan y lo mejora por etapas.", portada: true, nota: "Un optimizador heurístico en cuatro etapas" },
-  { etiqueta: "01  /  CÓMO LO ABORDAMOS", titulo: "Probar todo era imposible", bajada: "Antes de programar, comparamos técnicas de resolución y medimos cuánto crece el problema.", formula: "40 pedidos  →  40!  ≈  8 × 10⁴⁷ órdenes posibles", puntos: ["Pensamos en permutaciones: probar todos los órdenes posibles. Con 10 pedidos ya son 3,6 millones (10!), y eso sin contar cómo repartirlos entre los vehículos.", "El crecimiento factorial lo hace inviable: cada pedido extra multiplica el trabajo.", "Es un problema de ruteo de vehículos (VRP), que es NP-difícil: no se conoce un algoritmo que garantice el óptimo en tiempo razonable a medida que crece."], porque: "Elegimos una heurística: construir un buen plan y mejorarlo por etapas, midiendo cada cambio con el costo real.", nota: "Con pocos pedidos sí se puede probar todo: así comprobamos el resultado del final." },
+  { etiqueta: "01  /  CÓMO LO ABORDAMOS", titulo: "Probar todo era imposible", bajada: "Antes de programar, comparamos técnicas de resolución y medimos cuánto crece el problema.", formula: "40 pedidos  →  40!  ≈  8 × 10⁴⁷ órdenes posibles", puntos: ["Pensamos en permutaciones: probar todos los órdenes posibles. Con 10 pedidos ya son 3,6 millones (10!), y eso sin contar cómo repartirlos entre los vehículos.", "El crecimiento factorial lo hace inviable: cada pedido extra multiplica el trabajo.", "Es un problema de ruteo de vehículos (VRP), que es NP-difícil: no se conoce un algoritmo que garantice el óptimo en tiempo razonable a medida que crece."], porque: "Elegimos una heurística: construir un buen plan y mejorarlo por etapas, midiendo cada cambio con el costo real.", nota: "Con pocos pedidos sí se puede probar todo: así comprobamos el resultado del final.", crecimiento: true },
   { etiqueta: "02  /  EL OBJETIVO", titulo: "Un solo número guía todas las decisiones", bajada: "Cada plan se evalúa con la misma fórmula del simulador oficial: menor costo, mejor plan.", formula: "distancia × tarifa + vehículos + tiempo total + fallas × penalidad + demora premium", puntos: ["Distancia: cuadras recorridas, con el regreso al depósito.", "Vehículos y tiempo total: usar más vehículos baja el tiempo, pero cada uno suma costo fijo.", "Fallas y premium: pedidos sin entregar, y minutos hasta entregar a los clientes premium."], porque: "Con un número único, cada etapa compara alternativas de forma objetiva, por ejemplo cuántos vehículos conviene usar.", desglose: true },
   { etiqueta: "03  /  AGRUPAMIENTO", titulo: "Primero repartimos los pedidos", bajada: "Probamos desde 1 hasta el máximo de vehículos, para decidir cuántos conviene usar.", usamos: "K-means y barrido angular.", porque: "K-means agrupa por cercanía pero ignora el depósito. El barrido corta la ciudad en rebanadas alrededor del depósito. No sabemos cuál conviene en cada caso, así que probamos los dos, refinamos varios arranques y nos quedamos con el que termina más barato.", nota: "Es solo el punto de partida: las etapas siguientes lo corrigen.", etapa: 2, zonas: true },
   { etiqueta: "04  /  BARRIDO ANGULAR", titulo: "La otra forma de agrupar", bajada: "El barrido angular ordena los pedidos por el ángulo que forman con el depósito y los corta en rebanadas, como una pizza.", usamos: "Barrido angular, probando todos los puntos de arranque del corte.", porque: "A diferencia de k-means, tiene en cuenta dónde está el depósito: cada vehículo atiende una rebanada y no cruza toda la ciudad. Como no sabemos cuál conviene en cada dataset, usamos los dos.", nota: notaBarrido, comparar: true, ancha: true },
@@ -97,6 +99,7 @@ export function Presentacion() {
       {slide.paisaje3d && <Paisaje3D />}
       {slide.comparar && <ComparacionAgrupamiento dataset={informeZonas.dataset} kmeans={informeZonas.etapas[1].instantanea} barrido={datosBarrido} costoKmeans={arranque.kmeans} costoBarrido={arranque.barrido} />}
       {slide.arquitectura && <ArquitecturaCloudflare />}
+      {slide.crecimiento && <CrecimientoCostos />}
       {slide.imagen && <figure className={`pres-figure ${slide.qr ? "pres-qr" : ""}`}><img src={`/capturas-presentacion/${slide.imagen}`} alt={slide.alt} /><figcaption>{slide.pie}</figcaption></figure>}
       {slide.etapa && (() => {
         const fuente = slide.zonas ? informeZonas : informe;
