@@ -4,6 +4,7 @@ import type { Archivos } from "./api";
 import { CargaDataset } from "./components/CargaDataset";
 import { ComparacionK } from "./components/ComparacionK";
 import { Convergencia } from "./components/Convergencia";
+import { ControlesPwa } from "./components/ControlesPwa";
 import { DesgloseCosto } from "./components/DesgloseCosto";
 import { LineaDeTiempo } from "./components/LineaDeTiempo";
 import { VisorEtapas } from "./components/VisorEtapas";
@@ -75,6 +76,7 @@ export function App() {
         </div>
       </header>
 
+      <ControlesPwa ocupado={cargando} hayInforme={informe !== null} />
       <CargaDataset cargando={cargando} onResolver={resolverDataset} onInforme={mostrar} onError={setError} />
       {error && <div className="error" role="alert">{error}</div>}
 

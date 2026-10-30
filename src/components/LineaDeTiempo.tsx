@@ -34,8 +34,9 @@ export function LineaDeTiempo({ dataset, visitas, resaltado, onResaltar }: {
         <span><i className="leyenda__barra" /> Entregando</span>
         <span><i className="leyenda__barra leyenda__barra--recarga" /> Recarga en depósito</span>
       </div>
+      <div className="grafico__scroll" role="region" aria-label="Línea de tiempo, desplazable horizontalmente" tabIndex={0}>
       <div className="grafico__lienzo">
-        <svg viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="Línea de tiempo de cada vehículo">
+        <svg viewBox={`0 0 ${ancho} ${alto}`} role="group" aria-label="Línea de tiempo de cada vehículo">
           <defs>
             <pattern id="rayado" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
               <rect width="6" height="6" fill="#e1e0d9" />
@@ -60,7 +61,7 @@ export function LineaDeTiempo({ dataset, visitas, resaltado, onResaltar }: {
                   const salida = desde;
                   desde = v.salida;
                   return (
-                    <g key={i} onMouseEnter={() => setHover({ v, desde: salida, fila: fi })}>
+                    <g key={i} tabIndex={0} role="button" aria-label={`${v.vehiculo}, ${v.estado}, parada ${v.parada}. Llega ${aHora(v.llegada)}, sale ${aHora(v.salida)}. Ver detalle.`} onMouseEnter={() => setHover({ v, desde: salida, fila: fi })} onClick={() => setHover({ v, desde: salida, fila: fi })} onFocus={() => { setHover({ v, desde: salida, fila: fi }); onResaltar(id); }} onBlur={() => { setHover(null); onResaltar(null); }} onKeyDown={(e) => { if (e.key === "Escape") setHover(null); if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setHover({ v, desde: salida, fila: fi }); } }}>
                       <rect x={x(salida)} y={y + 7} width={Math.max(0, x(v.llegada) - x(salida) - 1)} height={8} rx={2} fill={color} opacity={0.3} />
                       {v.salida > v.llegada && (
                         <rect x={x(v.llegada)} y={y + 2} width={Math.max(1.5, x(v.salida) - x(v.llegada) - 1)} height={18} rx={2} fill={v.estado === "RECARGA" ? "url(#rayado)" : color} />
@@ -73,14 +74,15 @@ export function LineaDeTiempo({ dataset, visitas, resaltado, onResaltar }: {
           })}
           <line x1={x(fin)} x2={x(fin)} y1={0} y2={alto - 22} className="gantt__makespan" />
         </svg>
+      </div>
+      </div>
         {hover && (
-          <div className="tooltip" style={{ left: `${(x(hover.v.llegada) / ancho) * 100}%`, top: `${((8 + hover.fila * fila) / alto) * 100}%` }}>
+          <div className="tooltip" role="status">
             <strong>{hover.v.vehiculo} · {hover.v.estado === "ENTREGADO" ? `pedido ${hover.v.parada}` : hover.v.estado === "RECARGA" ? "recarga" : "vuelta al depósito"}</strong>
             <span>Sale {aHora(hover.desde)} · llega {aHora(hover.v.llegada)}</span>
             <span>{hover.v.cuadras} cuadras{hover.v.salida > hover.v.llegada ? ` · libre ${aHora(hover.v.salida)}` : ""}</span>
           </div>
         )}
-      </div>
       <figcaption>Makespan: {fin - inicio} min (vuelve el último a las {aHora(fin)})</figcaption>
     </figure>
   );

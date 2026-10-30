@@ -61,7 +61,7 @@ export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar }: Prop
 
   return (
     <div className="mapa">
-      <svg viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="Mapa de la grilla con el depósito, los pedidos y las rutas">
+      <svg viewBox={`0 0 ${ancho} ${alto}`} role="group" aria-label="Mapa de la grilla. Tocá un pedido o usá Tab para ver su detalle.">
         {Array.from({ length: mundo.ancho }, (_, x) => (
           <line key={`v${x}`} x1={px(x)} x2={px(x)} y1={py(0)} y2={py(mundo.alto - 1)} className="mapa__calle" />
         ))}
@@ -104,8 +104,15 @@ export function MapaGrilla({ dataset, instantanea, resaltado, onResaltar }: Prop
               key={p.id}
               transform={`translate(${px(p.x)} ${py(p.y)})`}
               opacity={atenuado ? 0.25 : 1}
-              onMouseEnter={() => setHover(p.id)}
-              onMouseLeave={() => setHover(null)}
+              tabIndex={0}
+              role="button"
+              aria-label={`Pedido ${p.id}, ${p.peso} kg. Ver detalle.`}
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") setHover(p.id); }}
+              onPointerLeave={(e) => { if (e.pointerType === "mouse") setHover(null); }}
+              onClick={() => setHover(p.id)}
+              onFocus={() => setHover(p.id)}
+              onBlur={() => setHover(null)}
+              onKeyDown={(e) => { if (e.key === "Escape") setHover(null); if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setHover(p.id); } }}
               className="mapa__pedido"
             >
               <circle r={14} fill="transparent" />

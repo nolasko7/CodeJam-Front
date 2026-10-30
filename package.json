@@ -10,6 +10,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && cf build",
     "typecheck": "tsc --noEmit",
+    "test": "node --test scripts/pwa.test.mjs",
+    "check:pwa": "node scripts/check-pwa-build.mjs",
     "preview": "vite preview",
     "deploy": "dotenv cf deploy"
   },
@@ -26,6 +28,7 @@
     "cf": "1.0.0-beta.24",
     "dotenv-cli": "^11.0.0",
     "typescript": "7.0.2",
-    "vite": "^8.3.5"
+    "vite": "^8.3.5",
+    "vite-plugin-pwa": "^2.0.0"
   }
 }

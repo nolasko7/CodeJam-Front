@@ -57,7 +57,7 @@ export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props
       <div className="carga__opciones">
         <label className="boton boton--tonal">
           Subir archivos
-          <input type="file" multiple accept=".json,.csv" onChange={subir} hidden />
+          <input className="entrada-archivo" type="file" multiple accept=".json,.csv" onChange={subir} />
         </label>
         <button className="boton boton--tonal" type="button" onClick={() => { setArchivos(EJEMPLO); setOrigen("Ejemplo del simulador (10 pedidos, 3 vehículos)"); }}>
           Ejemplo del simulador
@@ -78,7 +78,7 @@ export function CargaDataset({ cargando, onResolver, onInforme, onError }: Props
         Subí <code>mundo</code>, <code>pedidos</code> y <code>vehiculos</code> juntos, en JSON o CSV. ¿Ya corriste <code>npm run resolver</code>?{" "}
         <label className="enlace">
           Abrí su informe.json
-          <input type="file" accept=".json" onChange={abrirInforme} hidden />
+          <input className="entrada-archivo" type="file" accept=".json" onChange={abrirInforme} />
         </label>
         .
       </p>

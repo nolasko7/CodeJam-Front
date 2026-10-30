@@ -39,9 +39,11 @@ export function VisorEtapas({ informe, seleccionada, onSeleccionar, resaltado, o
           {inst && (
             <ul className="leyenda leyenda--vehiculos">
               {inst.rutas.map((r) => (
-                <li key={r.vehiculo} onMouseEnter={() => onResaltar(r.vehiculo)} onMouseLeave={() => onResaltar(null)} className={resaltado === r.vehiculo ? "activo" : undefined}>
+                <li key={r.vehiculo} className={resaltado === r.vehiculo ? "activo" : undefined}>
+                  <button type="button" aria-pressed={resaltado === r.vehiculo} onClick={() => onResaltar(resaltado === r.vehiculo ? null : r.vehiculo)}>
                   <i style={{ background: colorVehiculo(dataset.vehiculos, r.vehiculo) }} />
                   {r.vehiculo} · {r.paradas.filter((p) => p !== "DEPOSITO").length} pedidos
+                  </button>
                 </li>
               ))}
               {inst.sinAsignar.length > 0 && <li><i className="sin-asignar" /> Sin asignar · {inst.sinAsignar.length}</li>}

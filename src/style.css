@@ -21,7 +21,10 @@
 
 * { box-sizing: border-box; }
 
-body { margin: 0; min-width: 320px; min-height: 100vh; background: #f5f3fa; }
+body { margin: 0; min-width: 320px; min-height: 100vh; min-height: 100dvh; background: #f5f3fa; }
+
+:focus-visible { outline: 2px solid var(--primario); outline-offset: 3px; }
+button, input, summary, label.boton { touch-action: manipulation; }
 
 code { font-size: 0.9em; background: var(--primario-suave); padding: 1px 5px; border-radius: 6px; }
 
@@ -30,8 +33,10 @@ code { font-size: 0.9em; background: var(--primario-suave); padding: 1px 5px; bo
   gap: 20px;
   width: min(100%, 1240px);
   margin: 0 auto;
-  padding: 32px 16px 64px;
+  padding: max(32px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(64px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 }
+.pagina > *, .encabezado > *, .resumen > *, .etapa > * { min-width: 0; }
+.encabezado, .panel { overflow-wrap: anywhere; }
 
 .encabezado { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
 
@@ -72,7 +77,7 @@ h3 { margin: 4px 0 8px; font-size: 1.35rem; letter-spacing: -0.02em; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 18px;
   border: 0;
   border-radius: 999px;
@@ -80,24 +85,29 @@ h3 { margin: 4px 0 8px; font-size: 1.35rem; letter-spacing: -0.02em; }
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
+  justify-content: center;
+  max-width: 100%;
 }
+.boton:disabled { opacity: 0.55; cursor: default; }
 .boton--tonal { background: var(--primario-suave); color: #3b2a7a; }
 .boton--tonal:hover { background: #ddd4f3; }
 .boton--texto { background: transparent; color: var(--primario); padding: 0 10px; }
 .boton--texto:disabled { color: #c2bdc9; cursor: default; }
 .boton:focus-visible, .pasos button:focus-visible, .segmentado button:focus-visible { outline: 2px solid var(--primario); outline-offset: 2px; }
 .enlace { color: var(--primario); font-weight: 600; text-decoration: underline; cursor: pointer; }
+.entrada-archivo { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+label:has(.entrada-archivo:focus-visible) { outline: 2px solid var(--primario); outline-offset: 3px; }
 
 /* Carga */
 .carga__opciones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .carga__aleatorio { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--texto-2); font-size: 0.9rem; }
-.carga__aleatorio input { width: 56px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 10px; font: inherit; }
+.carga__aleatorio input { width: 64px; min-height: 44px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 10px; font: inherit; font-size: 1rem; }
 .carga__ayuda { margin: 14px 0 0; color: var(--texto-2); font-size: 0.9rem; }
 .carga__resolver { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--borde); }
 .carga__origen { flex: 1 1 220px; color: var(--texto-2); font-size: 0.92rem; }
 
 .segmentado { display: inline-flex; border: 1px solid var(--borde); border-radius: 999px; overflow: hidden; }
-.segmentado button { border: 0; background: transparent; padding: 8px 14px; font: inherit; font-size: 0.85rem; color: var(--texto-2); cursor: pointer; }
+.segmentado button { min-height: 44px; border: 0; background: transparent; padding: 8px 14px; font: inherit; font-size: 0.85rem; color: var(--texto-2); cursor: pointer; }
 .segmentado button[aria-checked="true"] { background: var(--primario-suave); color: #3b2a7a; font-weight: 700; }
 
 .error { padding: 14px 18px; border-radius: 16px; background: #fdecec; color: #8f2626; font-weight: 500; }
@@ -196,6 +206,9 @@ h3 { margin: 4px 0 8px; font-size: 1.35rem; letter-spacing: -0.02em; }
 .leyenda--vehiculos li { padding: 3px 8px; border-radius: 999px; cursor: default; }
 .leyenda--vehiculos li.activo { background: var(--primario-suave); }
 .leyenda li > i, .plan__vehiculo i { width: 12px; height: 12px; border-radius: 50%; }
+.leyenda--vehiculos li:has(button) { padding: 0; }
+.leyenda--vehiculos button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 10px; border: 0; border-radius: 999px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.leyenda--vehiculos button i { width: 12px; height: 12px; border-radius: 50%; }
 .leyenda .sin-asignar { border: 2px dashed #d03b3b; background: #fff; }
 .cruz { font-weight: 700; color: #52514e; }
 .leyenda__punto { width: 10px; height: 10px; border-radius: 50%; background: var(--primario); }
@@ -208,7 +221,10 @@ h3 { margin: 4px 0 8px; font-size: 1.35rem; letter-spacing: -0.02em; }
 
 /* Gráficos */
 .grafico { margin: 0; }
+.grafico__scroll { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; border-radius: 8px; }
 .grafico__lienzo { position: relative; }
+.grafico > .tooltip { position: static; transform: none; margin: 8px 0; white-space: normal; overflow-wrap: anywhere; }
+.grafico__scroll .grafico__lienzo { min-width: 480px; padding-top: 8px; }
 .grafico svg { display: block; width: 100%; height: auto; overflow: visible; }
 .grafico figcaption { margin-top: 8px; color: var(--texto-2); font-size: 0.85rem; }
 .grafico__grilla { stroke: var(--grilla); stroke-width: 1; }
@@ -249,3 +265,41 @@ h3 { margin: 4px 0 8px; font-size: 1.35rem; letter-spacing: -0.02em; }
 .plan__vehiculo { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
 .plan__paradas { color: var(--texto-2); font-variant-numeric: tabular-nums; line-height: 1.6; overflow-wrap: anywhere; }
 @media (max-width: 520px) { .plan li { grid-template-columns: 1fr; gap: 4px; } }
+
+/* PWA y responsive: el contenido decide el layout; no se detectan dispositivos en JS. */
+.pwa { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 18px; border: 1px solid var(--borde); border-radius: 16px; background: var(--primario-suave); color: var(--texto-2); font-size: 0.9rem; }
+.pwa__estado { flex: 1 1 280px; }
+.pwa__instalar { flex: 0 1 auto; }
+.pwa__instalar summary { min-height: 44px; align-content: center; color: var(--primario); font-weight: 600; cursor: pointer; }
+.pwa__instalar p { max-width: 60ch; margin: 6px 0; line-height: 1.5; }
+.pwa__actualizacion { flex-basis: 100%; border-top: 1px solid #d5ccec; padding-top: 10px; }
+.pwa__actualizacion p { margin: 0 0 10px; }
+.pwa__error { flex-basis: 100%; margin: 0; }
+.tabla-datos summary { min-height: 44px; align-content: center; }
+
+@media (max-width: 640px) {
+  .pagina { gap: 14px; padding-top: max(20px, env(safe-area-inset-top)); padding-right: max(12px, env(safe-area-inset-right)); padding-left: max(12px, env(safe-area-inset-left)); }
+  .panel { padding: 16px; border-radius: 18px; }
+  .intro { font-size: 1rem; line-height: 1.5; }
+  .carga__opciones { align-items: stretch; }
+  .carga__opciones > .boton { flex: 1 1 100%; }
+  .carga__aleatorio { width: 100%; gap: 8px 12px; }
+  .carga__aleatorio > button { flex-basis: 100%; }
+  .carga__resolver { gap: 12px; }
+  .carga__origen { flex-basis: 100%; overflow-wrap: anywhere; }
+  .carga__resolver .segmentado { display: flex; flex: 1 1 100%; }
+  .segmentado button { flex: 1; padding-inline: 10px; }
+  .carga__resolver md-filled-button { width: 100%; --md-filled-button-container-height: 48px; }
+  .pasos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .pasos button { padding: 10px 8px; gap: 2px 6px; }
+  .pasos__titulo { overflow-wrap: anywhere; }
+  .desglose__lista li { grid-template-columns: 12px minmax(0, 1fr) auto; gap: 6px 8px; }
+  .desglose__formula { grid-column: 2; grid-row: 2; }
+  .desglose__lista strong { grid-column: 3; grid-row: 1 / span 2; }
+  .etapa__datos div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .resumen__total strong { font-size: clamp(2rem, 10vw, 4rem); overflow-wrap: anywhere; }
+}
+
+@media (max-width: 640px), (hover: none) {
+  .tooltip, .mapa__tooltip { position: static; transform: none; margin: 8px; white-space: normal; overflow-wrap: anywhere; pointer-events: auto; }
+}

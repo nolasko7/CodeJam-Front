@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { MouseEvent } from "react";
+import type { PointerEvent } from "react";
 import { formatear } from "../tipos";
 import type { PuntoConvergencia } from "../tipos";
 
@@ -24,7 +24,7 @@ export function Convergencia({ puntos }: { puntos: PuntoConvergencia[] }) {
   const linea = (clave: "actual" | "mejor") => puntos.map((p, i) => `${i === 0 ? "M" : "L"}${x(p.iteracion).toFixed(1)} ${y(p[clave]).toFixed(1)}`).join(" ");
   const ticksY = Array.from({ length: 4 }, (_, i) => min + (rango * i) / 3);
 
-  function mover(e: MouseEvent<SVGSVGElement>) {
+  function mover(e: PointerEvent<SVGSVGElement>) {
     const caja = e.currentTarget.getBoundingClientRect();
     const it = (((e.clientX - caja.left) / caja.width) * ancho - izq) / (ancho - izq - der) * maxIt;
     let cerca = 0;
@@ -41,8 +41,9 @@ export function Convergencia({ puntos }: { puntos: PuntoConvergencia[] }) {
         <span><i className="leyenda__linea leyenda__linea--suave" /> Costo actual</span>
         <span><i className="leyenda__linea" /> Mejor encontrado</span>
       </div>
+      <div className="grafico__scroll" role="region" aria-label="Convergencia, desplazable horizontalmente" tabIndex={0}>
       <div className="grafico__lienzo">
-        <svg viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="Convergencia del recocido simulado" onMouseMove={mover} onMouseLeave={() => setHover(null)}>
+        <svg viewBox={`0 0 ${ancho} ${alto}`} role="img" tabIndex={0} aria-label="Convergencia del recocido simulado. Usá las flechas para recorrer las iteraciones." onPointerDown={mover} onPointerMove={mover} onPointerLeave={(e) => { if (e.pointerType === "mouse") setHover(null); }} onFocus={() => setHover(0)} onBlur={() => setHover(null)} onKeyDown={(e) => { if (e.key === "Escape") setHover(null); if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); setHover((actual) => Math.max(0, Math.min(puntos.length - 1, (actual ?? 0) + (e.key === "ArrowRight" ? 1 : -1)))); } }}>
           {ticksY.map((t) => (
             <g key={t}>
               <line x1={izq} x2={ancho - der} y1={y(t)} y2={y(t)} className="grafico__grilla" />
@@ -61,15 +62,16 @@ export function Convergencia({ puntos }: { puntos: PuntoConvergencia[] }) {
             </g>
           )}
         </svg>
+      </div>
+      </div>
         {h && (
-          <div className="tooltip" style={{ left: `${(x(h.iteracion) / ancho) * 100}%`, top: "10%" }}>
+          <div className="tooltip" role="status">
             <strong>Iteración {formatear(h.iteracion)}</strong>
             <span>Actual {formatear(h.actual)}</span>
             <span>Mejor {formatear(h.mejor)}</span>
             <span>Temperatura {h.temperatura.toFixed(1)}</span>
           </div>
         )}
-      </div>
     </figure>
   );
 }

@@ -24,8 +24,9 @@ export function ComparacionK({ porK }: { porK: ResultadoPorK[] }) {
         <span><i className="leyenda__punto leyenda__punto--hueco" /> Ruta inicial (etapa 3)</span>
         <span><i className="leyenda__punto" /> Final (etapa 6)</span>
       </div>
+      <div className="grafico__scroll" role="region" aria-label="Comparación de vehículos, desplazable horizontalmente" tabIndex={0}>
       <div className="grafico__lienzo">
-        <svg viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="Costo por cantidad de vehículos">
+        <svg viewBox={`0 0 ${ancho} ${alto}`} role="group" aria-label="Costo por cantidad de vehículos">
           {ticks.map((t) => (
             <g key={t}>
               <line x1={x(t)} x2={x(t)} y1={6} y2={alto - 24} className="grafico__grilla" />
@@ -35,7 +36,7 @@ export function ComparacionK({ porK }: { porK: ResultadoPorK[] }) {
           {porK.map((r, i) => {
             const y = 22 + i * fila;
             return (
-              <g key={r.k} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} className={r.elegido ? "dumbbell dumbbell--elegido" : "dumbbell"}>
+              <g key={r.k} tabIndex={0} role="button" aria-label={`Hasta ${r.k} vehículos: costo final ${formatear(r.final)}. Ver detalle.`} onPointerEnter={(e) => { if (e.pointerType === "mouse") setHover(i); }} onPointerLeave={(e) => { if (e.pointerType === "mouse") setHover(null); }} onFocus={() => setHover(i)} onBlur={() => setHover(null)} onClick={() => setHover(i)} onKeyDown={(e) => { if (e.key === "Escape") setHover(null); if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setHover(i); } }} className={r.elegido ? "dumbbell dumbbell--elegido" : "dumbbell"}>
                 <rect x={0} y={y - fila / 2} width={ancho} height={fila} className="dumbbell__zona" />
                 <text x={0} y={y + 4} className="dumbbell__etiqueta">
                   {r.k === 1 ? "1 vehículo" : `hasta ${r.k}`}
@@ -50,8 +51,10 @@ export function ComparacionK({ porK }: { porK: ResultadoPorK[] }) {
             );
           })}
         </svg>
+      </div>
+      </div>
         {hover !== null && (
-          <div className="tooltip" style={{ top: `${((22 + hover * fila) / alto) * 100}%`, left: "50%" }}>
+          <div className="tooltip" role="status">
             <strong>{porK[hover].k === 1 ? "1 vehículo" : `Hasta ${porK[hover].k} vehículos`}</strong>
             <span>Usó {porK[hover].vehiculosUsados}</span>
             <span>Ruta inicial {formatear(porK[hover].construccion)} ({porK[hover].metodo === "kmeans" ? "k-means" : "barrido"})</span>
@@ -60,7 +63,6 @@ export function ComparacionK({ porK }: { porK: ResultadoPorK[] }) {
             <span>Final {formatear(porK[hover].final)}</span>
           </div>
         )}
-      </div>
       <details className="tabla-datos">
         <summary>Ver tabla</summary>
         <table>
